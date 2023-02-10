@@ -13,14 +13,14 @@ export default function Home() {
   // API дуудах функц, мсж жагсаалт авчраад messages хувьсагчид оноох
   function getData() {
     fetch("http://localhost:8888/api/message")
-      .then((response) => response.json())
-      .then((result) => setMessages(result));
+      .then((a) => a.json())
+      .then((b) => setMessages(b));
   }
 
   // API дуудах функц, мсж илгээх
   function sendMessage() {
     fetch(`http://localhost:8888/api/message?msg=${message}`, {
-      method: "POST",
+      method: "POST", // GET, DELETE, POST, PUT
     }).then((response) => getData());
 
     setMessage("");
