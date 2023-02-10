@@ -1,6 +1,31 @@
 import Head from "next/head";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [messages, setMessages] = useState([]); // энэ дээр байгаа хувьсагч нь html рүү шууд sync хийгдэнэ
+  const [message, setMessage] = useState();
+
+  // Хуудас load хийгдэх үед ийшээ орно
+  useEffect(() => {
+    getData();
+  }, []);
+
+  // API дуудах функц, мсж жагсаалт авчраад messages хувьсагчид оноох
+  function getData() {
+    fetch("http://localhost:8888/api/message")
+      .then((response) => response.json())
+      .then((result) => setMessages(result));
+  }
+
+  // API дуудах функц, мсж илгээх
+  function sendMessage() {
+    fetch(`http://localhost:8888/api/message?msg=${message}`, {
+      method: "POST",
+    }).then((response) => getData());
+
+    setMessage("");
+  }
+
   return (
     <>
       <Head>
@@ -9,25 +34,29 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="w-full h-screen bg-slate-100 flex flex-col justify-between items-center px-40 py-20">
-        <div className="w-full flex flex-col gap-2">
-          <div className="w-full bg-sky-400 px-4 py-4 font-bold rounded-t-lg rounded-l-lg text-slate-100">
-            Hi, Yu bna daaa
-          </div>
-          <div className="w-full bg-sky-400 px-4 py-4 font-bold rounded-t-lg rounded-l-lg text-slate-100">
-            Twan doo
-          </div>
-          <div className="w-full bg-sky-400 px-4 py-4 font-bold rounded-t-lg rounded-l-lg text-slate-100">
-            ene hen bicheed bnaa?
-          </div>
+      <div className="w-full h-screen bg-slate-100 flex flex-col justify-between items-center px-40 py-20 overflow-y-scroll">
+        <div className="w-full flex flex-col gap-2 h-[calc(100vh-6rem)]">
+          {messages.map((row, i) => (
+            <div
+              key={i}
+              className="w-full bg-sky-400 px-4 py-4 font-bold rounded-t-lg rounded-l-lg text-slate-100"
+            >
+              {row}
+            </div>
+          ))}
         </div>
-        <div className="w-full flex justify-between">
+        <div className="w-full flex px-40 justify-between fixed bottom-0">
           <input
             type="text"
             placeholder="chat here..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
             className="w-full px-4 py-1 rounded"
           />
-          <button className="px-4 py-1 bg-sky-400 text-slate-100 rounded hover:bg-sky-300">
+          <button
+            onClick={() => sendMessage()}
+            className="px-4 py-1 bg-sky-400 text-slate-100 rounded hover:bg-sky-300"
+          >
             Илгээх
           </button>
         </div>
